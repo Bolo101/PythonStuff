@@ -6,7 +6,6 @@ state = True
 while state:
     input1 = input("Entrer un lien youtube pour mp3 file: ")
     if input1 =="":
-        state = False
         sys.exit()
     else:
         vid = YouTube(input1)
