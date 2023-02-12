@@ -11,7 +11,7 @@ while state:
     else:
         vid = YouTube(input1)
         video = vid.streams.filter(only_audio=True).first()
-        destination = "/home/bolo/Musics"
+        destination = "PATH"
         out_file = video.download(output_path=destination)
         base, ext = os.path.splitext(out_file)
         new_file = base + '.mp3'
