@@ -1,4 +1,3 @@
-#!/bin/python
 import getpass
 from cryptography.fernet import Fernet
 
@@ -61,20 +60,23 @@ def afficher_menu():
 
 
 def verifier_phrase_secrete():
-    phrase_secrete = "Les secrets les mieux gardés sont ceux que l'on ignore"
-    print('Phrase secrete: ')
-    tentative = getpass.getpass("Entrez la phrase secrète : ")
+    phrase_secrete = "test"
+    tentative = getpass.getpass("Entrez la phrase secrete: ")
     return tentative == phrase_secrete
 
 
 def main():
     fichier_cle = "cle.key"
     fichier_donnees = "coffre_fort.dat"
+
+    # Générer et sauvegarder une nouvelle clé si elle n'existe pas déjà
     try:
         cle = charger_cle(fichier_cle)
     except FileNotFoundError:
         cle = generer_cle()
         sauvegarder_cle(cle, fichier_cle)
+
+    # Charger les données du coffre-fort cryptées s'il existe, sinon initialiser un nouveau coffre-fort
     try:
         donnees_cryptees = open(fichier_donnees, 'rb').read()
         donnees = decrypter_donnees(donnees_cryptees, cle)
@@ -94,7 +96,9 @@ def main():
             elif choix == "3":
                 lire_mot_de_passe(coffre_fort, cle)
             elif choix == "4":
-                donnees_cryptees = crypter_donnees(str(coffre_fort), cle)
+                # Quitter le programme et sauvegarder les données du coffre-fort cryptées
+                donnees = str(coffre_fort)
+                donnees_cryptees = crypter_donnees(donnees, cle)
                 with open(fichier_donnees, 'wb') as file:
                     file.write(donnees_cryptees)
                 print("Les données du coffre-fort ont été sauvegardées.")
