@@ -1,3 +1,4 @@
+#!/bin/python
 import getpass
 from cryptography.fernet import Fernet
 
@@ -15,6 +16,10 @@ def charger_cle(fichier):
     with open(fichier, 'rb') as file:
         return file.read()
 
+def verifier_phrase_secrete():
+    phrase_secrete = "test"
+    tentative = getpass.getpass("Entrez la phrase secrète : ")
+    return tentative == phrase_secrete
 
 def crypter_donnees(donnees, cle):
     cipher_suite = Fernet(cle)
@@ -30,20 +35,20 @@ def ajouter_mot_de_passe(coffre_fort, cle):
     site = input("Entrez le nom du site ou du service : ")
     mot_de_passe = getpass.getpass("Entrez le mot de passe : ")
     coffre_fort[site] = crypter_donnees(mot_de_passe, cle)
-    print("Le mot de passe a été ajouté avec succès.")
+    print("MDP ajouté")
 
 
 def supprimer_mot_de_passe(coffre_fort):
-    site = input("Entrez le nom du site ou du service à supprimer : ")
+    site = input("Entrez le nom du site/service à supprimer : ")
     if site in coffre_fort:
         del coffre_fort[site]
-        print("Le mot de passe a été supprimé avec succès.")
+        print("MDP supprimé")
     else:
-        print("Aucun mot de passe trouvé pour ce site.")
+        print("Aucun mot de passe trouvé pour ce site/service.")
 
 
 def lire_mot_de_passe(coffre_fort, cle):
-    site = input("Entrez le nom du site ou du service : ")
+    site = input("Entrez le nom du site/service : ")
     if site in coffre_fort:
         mot_de_passe_crypte = coffre_fort[site]
         mot_de_passe = decrypter_donnees(mot_de_passe_crypte, cle)
@@ -59,24 +64,15 @@ def afficher_menu():
     print("4. Quitter")
 
 
-def verifier_phrase_secrete():
-    phrase_secrete = "test"
-    tentative = getpass.getpass("Entrez la phrase secrete: ")
-    return tentative == phrase_secrete
-
-
 def main():
     fichier_cle = "cle.key"
     fichier_donnees = "coffre_fort.dat"
-
-    # Générer et sauvegarder une nouvelle clé si elle n'existe pas déjà
     try:
         cle = charger_cle(fichier_cle)
     except FileNotFoundError:
         cle = generer_cle()
         sauvegarder_cle(cle, fichier_cle)
 
-    # Charger les données du coffre-fort cryptées s'il existe, sinon initialiser un nouveau coffre-fort
     try:
         donnees_cryptees = open(fichier_donnees, 'rb').read()
         donnees = decrypter_donnees(donnees_cryptees, cle)
@@ -96,7 +92,6 @@ def main():
             elif choix == "3":
                 lire_mot_de_passe(coffre_fort, cle)
             elif choix == "4":
-                # Quitter le programme et sauvegarder les données du coffre-fort cryptées
                 donnees = str(coffre_fort)
                 donnees_cryptees = crypter_donnees(donnees, cle)
                 with open(fichier_donnees, 'wb') as file:
@@ -104,9 +99,9 @@ def main():
                 print("Les données du coffre-fort ont été sauvegardées.")
                 break
             else:
-                print("Choix invalide. Veuillez réessayer.")
+                print("Veuillez réessayer")
     else:
-        print("Phrase secrète incorrecte. Accès refusé.")
+        print("Phrase secrète erronée. Accès refusé.")
 
 
 if __name__ == '__main__':
