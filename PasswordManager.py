@@ -1,4 +1,4 @@
-#!/bin/python
+*#!/bin/python
 
 """Credits: Bolo101
 
@@ -47,7 +47,7 @@ def read_site(register,key):
         password_encrypted = register[site]
         passworden = decrypt_data(password_encrypted, key)
         password = passworden.decode("utf-8")
-        print(f"{site} : {password}")
+        print(f"{site}: {password}")
     else :
         print("Not in database") 
 
@@ -65,8 +65,11 @@ def check_safety(locker_file,key):
         checking = getpass.getpass("Security input: ")
         pas = file.read()
         decrypted_pas = decrypt_data(pas,key)
+        decrypted_pas = decrypted_pas.decode()
         if checking == decrypted_pas:
             return True
+        else :
+            return False
         
 def constructSecurity(locker_file,key):
     with open(locker_file,'wb') as file:
@@ -84,15 +87,33 @@ def kind_world():
     liste = ['You are a genius', 'You can do it','Believe in yourself','You are your destiny','Keep it up']
     print(secrets.choice(liste))
 
+def modifyRootPassword(l_file,key):
+    confirmation = getpass.getpass("Enter current security input: ")
+    
+    with open(l_file,'rb') as file:
+        c_en_password = file.read()
+        c_password = decrypt_data(c_en_password,key).decode()
+        file.close()
+            
+    with open(l_file,'wb') as file: 
+        if confirmation == c_password:
+            new_password = getpass.getpass("Enter new security input: ")
+            new_en_password = encrypt_data(new_password,key)
+            file.write(new_en_password)
+            file.close()
+        else:
+            print("Pro")
+
 def displayMenu():
     print("1. Add a site/service credential")
     print("2. Delete a site/service credential")
-    print("3. Access a site/service credential")
+    print("3. Read a site/service credential")
     print("4. Modify a site/service credential")
     print("5. Get a kind word")
-    print("6. Exit")
+    print("6. Modify password manager security input")
+    print("7. Exit")
 
-def subMain(bank,key,key_file,data_file):
+def subMain(bank,key,data_file,locker_file):
     while True:
         displayMenu()
         choice = input("Option: ")
@@ -106,7 +127,9 @@ def subMain(bank,key,key_file,data_file):
             modify_site(bank,key)
         elif choice == '5':
             kind_world()
-        elif choice == '6':
+        elif choice =='6':
+            modifyRootPassword(locker_file,key)
+        elif choice == '7':
             data_to_encrypt = str(bank)
             data_encrypted = encrypt_data(data_to_encrypt,key)
             with open(data_file,'wb') as file:
@@ -136,12 +159,14 @@ def main():
         bank = {}
 
     try:
-        check_safety(locker_file,key)
-        subMain(bank,key,key_file,data_file)
+        if check_safety(locker_file,key):
+            subMain(bank,key,data_file,locker_file)
+        else:
+            print("X YOU SHALL NOT PASS X")
     except FileNotFoundError:
         if len(bank)==0:
             constructSecurity(locker_file,key)
-            subMain(bank,key,key_file,data_file)
+            subMain(bank,key,data_file,locker_file)
         else :
             print("Wrong password. Access denied")
 
