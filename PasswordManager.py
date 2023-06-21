@@ -21,10 +21,10 @@ def load_key(file):
         return file.read()
 
 def encrypt_data(data,key):
-    return Fernet(key).encrypt(data.encode('utf_8'))
+    return Fernet(key).encrypt(data.encode("utf-8"))
 
 def decrypt_data(data,key):
-    return Fernet(key).decrypt(data.decode('utf_8'))
+    return Fernet(key).decrypt(data.decode("utf-8"))
 
 def add_site(register,key):
     site = input("Site to add: ")
@@ -45,13 +45,14 @@ def read_site(register,key):
     site = input("Site: ")
     if site in register:
         password_encrypted = register[site]
-        password = decrypt_data(password_encrypted, key)
+        passworden = decrypt_data(password_encrypted, key)
+        password = passworden.decode("utf-8")
         print(f"{site} : {password}")
     else :
         print("Not in database") 
 
 def modify_site(register,key):
-    site = input("Site to modify ")
+    site = input("Site to modify: ")
     if site in register:
         password = getpass.getpass("New password: ")
         register[site] = encrypt_data(password,key)
@@ -102,7 +103,7 @@ def subMain(bank,key,key_file,data_file):
         elif choice =='3':
             read_site(bank,key)
         elif choice == '4':
-            modify_site(register=key)
+            modify_site(bank,key)
         elif choice == '5':
             kind_world()
         elif choice == '6':
