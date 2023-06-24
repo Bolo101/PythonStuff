@@ -96,13 +96,20 @@ def modifyRootPassword(l_file,key):
         file.close()
             
     with open(l_file,'wb') as file: 
-        if confirmation == c_password:
-            new_password = getpass.getpass("Enter new security input: ")
-            new_en_password = encrypt_data(new_password,key)
-            file.write(new_en_password)
-            file.close()
-        else:
-            print("Pro")
+        while True:
+            if confirmation == c_password:
+                new_password = getpass.getpass("Enter new security input: ")
+                confirmation2 = getpass.getpass("Confirm new password: ")
+                if new_password == confirmation2:
+                    new_en_password = encrypt_data(new_password,key)
+                    file.write(new_en_password)
+                    file.close()
+                    print("|||Password successfully changed |||")
+                    return False
+                else:
+                    print("Passwords do not match. Try again")
+            else:
+                print("\\Wrong Password//")
 
 def displayMenu():
     print("1. Add a site/service credential")
